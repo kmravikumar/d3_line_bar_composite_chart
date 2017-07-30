@@ -3,13 +3,13 @@ var dataArray = [
                  ['category Q',5,200], ['category R',10,100], ['Some text ...long S',19,3500], ['T',40,5000]                                                   
                 ];
 
-plot_line_graph(dataArray, "#line_chart", 500, 400);
+plot_line_graph(dataArray, "#line_chart", 600, 300, 'yLabel', 'yLabel2');
 
 
 // A function to plot D3 line chart - Pass in the data array and the html objectId
 // where the chart needs to be.
 // Also pass the width, height for the plot
-function plot_line_graph (dataArray, htmlObjectId, width, height) {
+function plot_line_graph (dataArray, htmlObjectId, width, height, yLabel, yLabel2) {
 
     // set margins for a nice looking bar chart
     var margin = {top: 30, right: 50, bottom: 50, left: 50},
@@ -41,7 +41,7 @@ function plot_line_graph (dataArray, htmlObjectId, width, height) {
     // NOTE: The range is from margin.left and not 0.
     var widthScale = d3.scaleBand()
                         .range([margin.left, width])
-                        .padding(0.1)
+                        .padding(0.4)
                         .domain(dataArray.map(function(d) { return d[0]; }))
                         ;
 
@@ -76,6 +76,38 @@ function plot_line_graph (dataArray, htmlObjectId, width, height) {
         .curve(d3.curveLinear)
         ;
 
+    // add bars to the canvas                
+    var bars = canvas.selectAll("rect")
+                    .data(dataArray)
+                    .enter()
+                        .append("rect")
+                        .attr("class", "bar")
+                        .attr("y", function(d) {return heightScale2(d[2]);})
+                        .attr("x", function(d) {return widthScale(d[0]);})
+                        .attr("height", function(d) {return height - heightScale2(d[2]);})
+                        .attr("width", widthScale.bandwidth())
+                        .attr("fill", "seagreen")
+                        .style("opacity", 0.7)
+                        .on("mouseover", function(d) {
+                            d3.select(this).attr("fill","orangered");
+                                div.transition()
+                                    .duration(200)
+                                    .style("opacity", .9);
+                                div.html(d[1] + ",<br/>" + d[2])
+                                    .style("left", (d3.event.pageX) + "px")
+                                    .style("top", (d3.event.pageY - 28) + "px");
+
+                        })
+                        .on("mouseout", function(d) {
+                            d3.select(this).attr("fill","seagreen");
+                                div.transition()		
+                                    .duration(200)		
+                                    .style("opacity", 0);                            
+                        })                        
+                        .on("click", function(d) {
+                            console.log(d);
+                        })
+                        ;        
 
     // Draw line connecting the data points
     // Do not fill!
@@ -85,7 +117,7 @@ function plot_line_graph (dataArray, htmlObjectId, width, height) {
         .attr("stroke", "steelblue")
         .attr("stroke-linejoin", "round")
         .attr("stroke-linecap", "round")
-        .attr("stroke-width", 1.5)
+        .attr("stroke-width", 2)
         .attr("d", line)
         ;
 
@@ -102,7 +134,7 @@ function plot_line_graph (dataArray, htmlObjectId, width, height) {
     canvas.selectAll("dot")
         .data(dataArray)
       .enter().append("circle")
-        .attr("r", 3.5)
+        .attr("r", 4)
         .attr("cx", function(d) { return widthScale(d[0]) + widthScale.bandwidth()/2; })
         .attr("cy", function(d) { return heightScale(d[1]); })
         .attr("fill", "steelblue")
@@ -110,7 +142,7 @@ function plot_line_graph (dataArray, htmlObjectId, width, height) {
             div.transition()
                 .duration(200)
                 .style("opacity", .9);
-            div.html(d[0] + "<br/>" + d[1])
+            div.html(d[1] + ",<br/> " + d[2])
                 .style("left", (d3.event.pageX) + "px")
                 .style("top", (d3.event.pageY - 28) + "px");
         })
@@ -121,28 +153,7 @@ function plot_line_graph (dataArray, htmlObjectId, width, height) {
         })
         ;
 
-    // add bars to the canvas                
-    var bars = canvas.selectAll("rect")
-                    .data(dataArray)
-                    .enter()
-                        .append("rect")
-                        .attr("class", "bar")
-                        .attr("y", function(d) {return heightScale2(d[2]);})
-                        .attr("x", function(d) {return widthScale(d[0]);})
-                        .attr("height", function(d) {return height - heightScale2(d[2]);})
-                        .attr("width", widthScale.bandwidth())
-                        .attr("fill", "gray")
-                        .style("opacity", 0.3)
-                        .on("mouseover", function(d) {
-                            d3.select(this).attr("fill","red");
-                        })
-                        .on("mouseout", function(d) {
-                            d3.select(this).attr("fill","gray");
-                        })                        
-                        .on("click", function(d) {
-                            console.log(d);
-                        })
-                        ;
+
 
 
     // Add x-axis to the bar chart canvas
@@ -165,10 +176,13 @@ function plot_line_graph (dataArray, htmlObjectId, width, height) {
                 .attr("class", "axis y")  
             .append("text")
                 .attr("transform", "rotate(-90)")
-                .attr("y", 30)
-                .attr("dy", "1em")
+                .attr("y", 0)
+                .attr("x", 0)
+                .attr("dy", "1.2em")
+                .attr("dx", "-5em")
                 .style("text-anchor", "end")
-                .text("YLabel")
+                .text(yLabel)
+                .attr("fill", "steelblue");
                 ;
 
     // add y-axis2 to the bar chart canvas
@@ -178,10 +192,13 @@ function plot_line_graph (dataArray, htmlObjectId, width, height) {
                 .attr("class", "axis y2")  
             .append("text")
                 .attr("transform", "rotate(-90)")
-                .attr("y", 6)
-                .attr("dy", ".71em")
+                .attr("y", 0)
+                .attr("x", 0)
+                .attr("dy", "-0.2em")
+                .attr("dx", "-5em")
                 .style("text-anchor", "end")
-                .text("YLabel2")
-                ;                ;                
+                .text(yLabel2)
+                .attr("fill", "seagreen");
+                ;
                                 
 }                            
