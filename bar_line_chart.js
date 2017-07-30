@@ -3,13 +3,13 @@ var dataArray = [
                  ['category Q',5,200], ['category R',10,100], ['Some text ...long S',19,3500], ['T',40,5000]                                                   
                 ];
 
-plot_line_graph(dataArray, "#line_chart", 600, 300, 'yLabel', 'yLabel2');
+plot_bar_line_graph(dataArray, "#bar_line_chart", 600, 300, 'yLabel', 'yLabel2');
 
 
 // A function to plot D3 line chart - Pass in the data array and the html objectId
 // where the chart needs to be.
 // Also pass the width, height for the plot
-function plot_line_graph (dataArray, htmlObjectId, width, height, yLabel, yLabel2) {
+function plot_bar_line_graph (dataArray, htmlObjectId, width, height, yLabel, yLabel2) {
 
     // set margins for a nice looking bar chart
     var margin = {top: 30, right: 50, bottom: 50, left: 50},
